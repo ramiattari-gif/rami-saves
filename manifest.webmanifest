@@ -1,17 +1,21 @@
 {
+  "id": "/rami-saves/",
   "name": "Rami's Saves",
   "short_name": "Rami's Saves",
-  "start_url": "./",
-  "scope": "./",
+  "description": "Save links to Rami's Saves from any app's Share button.",
+  "start_url": "/rami-saves/",
+  "scope": "/rami-saves/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#1f6f5c",
   "theme_color": "#1f6f5c",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "share_target": {
-    "action": "./",
+    "action": "/rami-saves/",
     "method": "GET",
     "params": { "title": "title", "text": "text", "url": "url" }
   }
