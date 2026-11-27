@@ -23,6 +23,7 @@
   .ok { color: #2e9b6e } .err { color: #d0473a }
   .small { font-size: 13px; opacity: .75 }
   a { color: var(--ac) }
+  .big-link { display: block; text-align: center; font: 600 17px system-ui; padding: 12px; border: 2px solid var(--ac); border-radius: 12px; text-decoration: none }
 </style>
 </head>
 <body>
@@ -30,11 +31,12 @@
   <h1>Save to Rami's Saves</h1>
   <button id="pasteSave" class="big">📋 Save the link I copied</button>
   <div class="status" id="status" role="status"></div>
+  <a class="big-link" href="https://script.google.com/macros/s/AKfycbwYGPagCY9GfPqCKODmUjecLuQUYq04ZoDKwUcaZPR3G5qw1dze118pbgvmY3VT29ET/exec" target="_blank" rel="noopener">📚 Open my saves</a>
   <p class="small">In YouTube, Facebook or Instagram tap <b>Share → Copy link</b>, come here and tap the button above. Or paste a link below.</p>
   <div><label for="url">Link</label><input id="url" type="url" inputmode="url" placeholder="https://…" autocomplete="off"></div>
   <div><label for="note">Note (optional)</label><textarea id="note" placeholder="Why you saved it"></textarea></div>
   <button id="save" class="ghost">Save this link</button>
-  <p class="small">Saves show up on <a href="https://claude.ai/artifact/MKHRWjgmdUyBU8ULqm5JPq" target="_blank" rel="noopener">your saves page</a>, tagged "Shared". To save from any app, use its Share button and pick <b>Rami's Saves</b>.</p>
+  <p class="small">Saves show up on <a href="https://script.google.com/macros/s/AKfycbwYGPagCY9GfPqCKODmUjecLuQUYq04ZoDKwUcaZPR3G5qw1dze118pbgvmY3VT29ET/exec" target="_blank" rel="noopener">your saves page</a>, tagged "Shared". To save from any app, use its Share button and pick <b>Rami's Saves</b>.</p>
 </main>
 <script>
 const FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSdILCkhQ1Ez-UCYJccW5a0SdYHSMHHzz7x2tG3_iUhzZ-S7xw/formResponse';
