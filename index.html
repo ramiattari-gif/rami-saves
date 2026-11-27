@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Save to Rami's Saves</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<meta name="theme-color" content="#1f6f5c">
+<style>
+  :root { color-scheme: light dark; --ac: #1f6f5c }
+  body { margin: 0; font: 16px/1.5 system-ui, sans-serif; display: grid; min-height: 100vh; place-items: start center; background: Canvas; color: CanvasText }
+  main { width: min(520px, 100% - 32px); padding: 28px 0; display: grid; gap: 14px }
+  h1 { font-size: 22px; margin: 0 }
+  label { font-weight: 600; font-size: 14px }
+  input, textarea { width: 100%; box-sizing: border-box; font: inherit; padding: 10px 12px; border: 1px solid color-mix(in srgb, CanvasText 25%, transparent); border-radius: 10px; background: Canvas; color: CanvasText }
+  textarea { min-height: 70px; resize: vertical }
+  button { font: 600 17px system-ui; padding: 12px; border: 0; border-radius: 12px; background: var(--ac); color: #fff; cursor: pointer }
+  button:disabled { opacity: .5 }
+  .status { min-height: 1.5em; font-weight: 600 }
+  .ok { color: #2e9b6e } .err { color: #d0473a }
+  .small { font-size: 13px; opacity: .75 }
+  a { color: var(--ac) }
+</style>
+</head>
+<body>
+<main>
+  <h1>Save to Rami's Saves</h1>
+  <div><label for="url">Link</label><input id="url" type="url" inputmode="url" placeholder="https://…" autocomplete="off"></div>
+  <div><label for="note">Note (optional)</label><textarea id="note" placeholder="Why you saved it"></textarea></div>
+  <button id="save">Save</button>
+  <div class="status" id="status" role="status"></div>
+  <p class="small">Saves show up on <a href="https://claude.ai/artifact/MKHRWjgmdUyBU8ULqm5JPq" target="_blank" rel="noopener">your saves page</a>, tagged "Shared". To save from any app, use its Share button and pick <b>Rami's Saves</b>.</p>
+</main>
+<script>
+const FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSdILCkhQ1Ez-UCYJccW5a0SdYHSMHHzz7x2tG3_iUhzZ-S7xw/formResponse';
+const F_LINK = 'entry.2080797696', F_NOTE = 'entry.1508743655';
+const $ = id => document.getElementById(id);
+
+// What another app shared with us (Android/Windows put the link in "url" or inside "text")
+const p = new URLSearchParams(location.search);
+const shared = [p.get('url'), p.get('text'), p.get('title')].filter(Boolean).join(' ');
+const found = shared.match(/https?:\/\/\S+/);
+if (found) $('url').value = found[0];
+const extra = [p.get('title'), (p.get('text') || '').replace(/https?:\/\/\S+/g, '')].map(s => (s || '').trim()).filter(Boolean);
+if (extra.length) $('note').value = [...new Set(extra)].join(' — ');
+if (shared) history.replaceState(null, '', location.pathname);
+
+async function save() {
+  const url = ($('url').value.match(/https?:\/\/\S+/) || [])[0];
+  if (!url) { $('status').className = 'status err'; $('status').textContent = 'Paste a link that starts with https://'; return; }
+  $('save').disabled = true; $('status').className = 'status'; $('status').textContent = 'Saving…';
+  try {
+    const body = new URLSearchParams({ [F_LINK]: url, [F_NOTE]: $('note').value.trim() });
+    await fetch(FORM, { method: 'POST', mode: 'no-cors', body });
+    $('status').className = 'status ok'; $('status').textContent = 'Saved ✓';
+    $('url').value = ''; $('note').value = '';
+    if (found) setTimeout(() => { try { window.close(); } catch {} }, 1200);
+  } catch {
+    $('status').className = 'status err'; $('status').textContent = 'No connection. Try again.';
+  }
+  $('save').disabled = false;
+}
+$('save').onclick = save;
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+</script>
+</body>
+</html>
