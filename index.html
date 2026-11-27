@@ -17,6 +17,8 @@
   textarea { min-height: 70px; resize: vertical }
   button { font: 600 17px system-ui; padding: 12px; border: 0; border-radius: 12px; background: var(--ac); color: #fff; cursor: pointer }
   button:disabled { opacity: .5 }
+  button.big { font-size: 20px; padding: 18px }
+  button.ghost { background: transparent; color: var(--ac); border: 2px solid var(--ac) }
   .status { min-height: 1.5em; font-weight: 600 }
   .ok { color: #2e9b6e } .err { color: #d0473a }
   .small { font-size: 13px; opacity: .75 }
@@ -26,10 +28,12 @@
 <body>
 <main>
   <h1>Save to Rami's Saves</h1>
+  <button id="pasteSave" class="big">📋 Save the link I copied</button>
+  <div class="status" id="status" role="status"></div>
+  <p class="small">In YouTube, Facebook or Instagram tap <b>Share → Copy link</b>, come here and tap the button above. Or paste a link below.</p>
   <div><label for="url">Link</label><input id="url" type="url" inputmode="url" placeholder="https://…" autocomplete="off"></div>
   <div><label for="note">Note (optional)</label><textarea id="note" placeholder="Why you saved it"></textarea></div>
-  <button id="save">Save</button>
-  <div class="status" id="status" role="status"></div>
+  <button id="save" class="ghost">Save this link</button>
   <p class="small">Saves show up on <a href="https://claude.ai/artifact/MKHRWjgmdUyBU8ULqm5JPq" target="_blank" rel="noopener">your saves page</a>, tagged "Shared". To save from any app, use its Share button and pick <b>Rami's Saves</b>.</p>
 </main>
 <script>
@@ -58,7 +62,7 @@ async function save() {
     if (title && !note.includes(title)) note = note ? title + ' — ' + note : title;
     const body = new URLSearchParams({ [F_LINK]: url, [F_NOTE]: note });
     await fetch(FORM, { method: 'POST', mode: 'no-cors', body });
-    $('status').className = 'status ok'; $('status').textContent = 'Saved ✓';
+    $('status').className = 'status ok'; $('status').textContent = 'Saved ✓' + (note ? ' — ' + note.slice(0, 80) : '');
     $('url').value = ''; $('note').value = '';
     if (found) setTimeout(() => { try { window.close(); } catch {} }, 1200);
   } catch {
@@ -67,6 +71,19 @@ async function save() {
   $('save').disabled = false;
 }
 $('save').onclick = save;
+$('pasteSave').onclick = async () => {
+  let txt = '';
+  try { txt = await navigator.clipboard.readText(); } catch {
+    $('status').className = 'status err';
+    $('status').textContent = 'Your phone blocked reading the copied link. Tap "Allow" if it asks, or long-press the Link box below and tap Paste.';
+    $('url').focus(); return;
+  }
+  const m = (txt || '').match(/https?:\/\/\S+/);
+  if (!m) { $('status').className = 'status err'; $('status').textContent = 'Nothing copied yet. In the app, tap Share → Copy link first.'; return; }
+  $('url').value = m[0];
+  const rest = txt.replace(m[0], '').trim(); if (rest && !$('note').value) $('note').value = rest.slice(0, 300);
+  save();
+};
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
 </script>
 </body>
