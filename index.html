@@ -51,7 +51,12 @@ async function save() {
   if (!url) { $('status').className = 'status err'; $('status').textContent = 'Paste a link that starts with https://'; return; }
   $('save').disabled = true; $('status').className = 'status'; $('status').textContent = 'Saving…';
   try {
-    const body = new URLSearchParams({ [F_LINK]: url, [F_NOTE]: $('note').value.trim() });
+    let note = $('note').value.trim(), title = '';
+    if (/(^|\.)youtube\.com|youtu\.be/.test(new URL(url).hostname)) {
+      try { const j = await (await fetch('https://www.youtube.com/oembed?format=json&url=' + encodeURIComponent(url))).json(); title = (j.title || '').trim(); } catch {}
+    }
+    if (title && !note.includes(title)) note = note ? title + ' — ' + note : title;
+    const body = new URLSearchParams({ [F_LINK]: url, [F_NOTE]: note });
     await fetch(FORM, { method: 'POST', mode: 'no-cors', body });
     $('status').className = 'status ok'; $('status').textContent = 'Saved ✓';
     $('url').value = ''; $('note').value = '';
